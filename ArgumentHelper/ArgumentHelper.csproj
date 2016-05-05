@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2E494931-8209-4C06-A21D-C477937F2BFE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ArgumentHelper</RootNamespace>
+    <AssemblyName>ArgumentHelper</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>../lib/log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arguments\Appender\ITextAppender.cs" />
+    <Compile Include="Arguments\Appender\RawAppender.cs" />
+    <Compile Include="Arguments\ArgCheckResult.cs" />
+    <Compile Include="Arguments\FileFilters\RegexNameFilter.cs" />
+    <Compile Include="Arguments\FileFilters\FileNameFilter.cs" />
+    <Compile Include="Arguments\FileFilters\FilterContext.cs" />
+    <Compile Include="Arguments\FileFilters\FilterFactory.cs" />
+    <Compile Include="Arguments\FileFilters\IContextDataProvider.cs" />
+    <Compile Include="Arguments\FileFilters\MMinFilter.cs" />
+    <Compile Include="Arguments\FileFilters\MTimeFilter.cs" />
+    <Compile Include="Arguments\FileFilters\RegexPathFilter.cs" />
+    <Compile Include="Arguments\FileFilters\TimeEnum.cs" />
+    <Compile Include="Arguments\FileFilters\TimeHelper.cs" />
+    <Compile Include="Arguments\General\AbstractAllowedArgs.cs" />
+    <Compile Include="Arguments\General\AbstractAllowedArgsBase.cs" />
+    <Compile Include="Arguments\General\Argument.cs" />
+    <Compile Include="Arguments\General\AbstractArgumentsChecker.cs" />
+    <Compile Include="Arguments\General\ArgumentValidationException.cs" />
+    <Compile Include="Arguments\General\Attributes\NonArgumentAttribute.cs" />
+    <Compile Include="Arguments\Appender\ConsoleAppender.cs" />
+    <Compile Include="Arguments\General\ExampleGroup.cs" />
+    <Compile Include="Arguments\General\RawHelpArgument.cs" />
+    <Compile Include="Arguments\General\HelpArgument.cs" />
+    <Compile Include="Arguments\General\IAllowedArgs.cs" />
+    <Compile Include="Arguments\General\Logging\ConsoleLogProvider.cs" />
+    <Compile Include="Arguments\General\Logging\Log4NetProvider.cs" />
+    <Compile Include="Arguments\General\Logging\ILogProvider.cs" />
+    <Compile Include="Arguments\General\Operators\AbstractArgTreeItem.cs" />
+    <Compile Include="Arguments\General\Operators\AndItem.cs" />
+    <Compile Include="Arguments\General\Operators\EmptyItem.cs" />
+    <Compile Include="Arguments\General\Operators\IArgTreeItem.cs" />
+    <Compile Include="Arguments\General\Operators\IItemFactory.cs" />
+    <Compile Include="Arguments\General\Operators\ITestContext.cs" />
+    <Compile Include="Arguments\General\Operators\NotItem.cs" />
+    <Compile Include="Arguments\General\Operators\OrItem.cs" />
+    <Compile Include="Arguments\General\Operators\TreeBuilder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

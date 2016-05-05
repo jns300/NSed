@@ -234,3 +234,9 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/todo.txt
+/Tester/nunit.framework.dll
+/Tester/nunit.framework.xml
+/NUnitProjectTester
+/NSedTrials
+/packages
