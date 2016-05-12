@@ -98,6 +98,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\DirScan.cs" />
     <Compile Include="Search\FullRegion.cs" />
+    <Compile Include="Search\LineData.cs" />
     <Compile Include="Search\Region\AbstractEndIndex.cs" />
     <Compile Include="Search\Region\AbstractStartIndex.cs" />
     <Compile Include="Search\Region\EndIntIndex.cs" />

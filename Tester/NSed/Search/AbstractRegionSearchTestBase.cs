@@ -14,14 +14,23 @@ namespace Tester.NSed.Search
         protected void AssertRegionState(SearchRegion region, string[] beforeLines, string[] afterLines,
             String[] selected)
         {
-            Assert.AreEqual(beforeLines, region.GetBeforeLines().ToArray());
-            Assert.AreEqual(afterLines, region.GetAfterLines().ToArray());
+            AssertRegionState(region, beforeLines, afterLines, selected, true);
+        }
+        protected void AssertRegionState(SearchRegion region, string[] beforeLines, string[] afterLines,
+            String[] selected, bool isLatsCharNewLine)
+        {
+            Assert.AreEqual(beforeLines, region.GetBeforeLines().Select(ld => ld.Line).ToArray());
+            Assert.AreEqual(afterLines, region.GetAfterLines().Select(ld => ld.Line).ToArray());
             Assert.AreEqual(selected.Length, region.SelectedLineCount);
             StringBuilder sb = new StringBuilder();
             foreach (String s in selected)
             {
                 sb.Append(s);
                 sb.Append(Environment.NewLine);
+            }
+            if (!isLatsCharNewLine && sb.Length > 0)
+            {
+                sb.Remove(sb.Length - Environment.NewLine.Length, Environment.NewLine.Length);
             }
             Assert.AreEqual(sb.ToString(), region.GetSelectedLines());
         }

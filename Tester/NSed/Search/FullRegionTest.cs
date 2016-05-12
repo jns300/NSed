@@ -17,14 +17,17 @@ namespace Tester.NSed.Search
         [Test]
         public void FindIndex()
         {
-            FullRegion region = new FullRegion(new String[0]);
+            FullRegion region = new FullRegion(new String[0], true);
             AssertRegionState(region, new string[0], new string[0], new string[0]);
 
-            region = new FullRegion(new String[] { "line1" });
+            region = new FullRegion(new String[] { "line1" }, true);
             AssertRegionState(region, new string[0], new string[0], new string[] { "line1" });
 
-            region = new FullRegion(lines);
+            region = new FullRegion(lines, true);
             AssertRegionState(region, new string[0], new string[0], lines);
+
+            region = new FullRegion(new String[] { "line1" }, false);
+            AssertRegionState(region, new string[0], new string[0], new string[] { "line1" }, false);
         }
 
     }

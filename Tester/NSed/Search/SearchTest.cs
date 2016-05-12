@@ -63,6 +63,59 @@ namespace Tester.NSed.Search
             Assert.IsTrue(search.DeleteFilePermanently);
         }
 
+
+        [Test]
+        public void IsLastCharNewLine()
+        {
+            CheckLastCharNewLineFlag(String.Empty, false);
+
+            CheckLastCharNewLineFlag(Environment.NewLine, true);
+
+            CheckLastCharNewLineFlag("a" + Environment.NewLine, true);
+
+            CheckLastCharNewLineFlag("a", false);
+        }
+
+        private static void CheckLastCharNewLineFlag(String fileContent, bool isLastCharNewLine)
+        {
+            File.WriteAllText(TEMP_TEST_FILE, fileContent);
+            NSedAllowedArgs args = GetAllowedArgs();
+            args.FilePath.SetFoundValues(TEMP_TEST_FILE, 1);
+            args.Find.SetFoundValues("test", 1);
+            SearchAndReplace search = new SearchAndReplace(args, TEMP_TEST_FILE);
+            Assert.AreEqual(search.CheckIsLastCharNewLine(), true);
+
+            // Replace is turned on
+            args.Replace.SetFoundValues(String.Empty, 1);
+            search = new SearchAndReplace(args, TEMP_TEST_FILE);
+            Assert.AreEqual(search.CheckIsLastCharNewLine(), isLastCharNewLine);
+        }
+
+        [Test]
+        public void SimpleFind()
+        {
+            SimpleFind(String.Empty, "test", 0);
+
+            SimpleFind(Environment.NewLine, "test", 0);
+
+            SimpleFind("test", "test", 1);
+
+            SimpleFind("test" + Environment.NewLine, "test", 1);
+
+            SimpleFind("test" + Environment.NewLine + "test" + Environment.NewLine, "test", 2);
+        }
+
+        private static void SimpleFind(String fileContent, String toFind, int expectedMatchCount)
+        {
+            File.WriteAllText(TEMP_TEST_FILE, fileContent);
+            NSedAllowedArgs args = GetAllowedArgs();
+            args.FilePath.SetFoundValues(TEMP_TEST_FILE, 1);
+            args.Find.SetFoundValues(toFind, 1);
+            SearchAndReplace search = new SearchAndReplace(args, TEMP_TEST_FILE);
+            search.Perform();
+            Assert.AreEqual(expectedMatchCount, search.MatchCount);
+        }
+
         [Test]
         public void Find()
         {
@@ -82,14 +135,21 @@ namespace Tester.NSed.Search
             args.FilePath.SetFoundValues(TEMP_TEST_FILE, 1);
             args.Find.SetFoundValues("(Bundle-version=)[^,]*(,)?", 1);
             args.Replace.SetFoundValues("\\1[1.0.0,1.0.2)]\\2", 1);
-            String content = "bundle-version=1.0.0,\nbundle-version=2.0.0,";
+            String content = "bundle-version=1.0.0,\nbundle-version=2.0.0," + Environment.NewLine;
             String replacedContent = "bundle-version=[1.0.0,1.0.2)]," + Environment.NewLine
                 + "bundle-version=[1.0.0,1.0.2)]," + Environment.NewLine;
+            ReplaceInFile(args, content, replacedContent, true);
+
+            // No new line at the end
+            content = "bundle-version=1.0.0,\nbundle-version=2.0.0,";
+            replacedContent = "bundle-version=[1.0.0,1.0.2)]," + Environment.NewLine
+                + "bundle-version=[1.0.0,1.0.2)],";
             ReplaceInFile(args, content, replacedContent, true);
 
             // Case-sesitive check
             args.CaseSensitive.SetFoundValues(String.Empty, 1);
             ReplaceInFile(args, content, replacedContent, false, false);
+
         }
 
         [Test]
@@ -104,7 +164,7 @@ namespace Tester.NSed.Search
             String replacedContent = "\r\n\tversion=1.0.3\r\n";
             ReplaceInFile(args, content, replacedContent, true);
 
-            // singleline 
+            // single line 
             args.Multiline.SetFoundValues(String.Empty, 0);
             ReplaceInFile(args, content, replacedContent, true);
         }

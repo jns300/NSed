@@ -7,6 +7,7 @@ using System.IO;
 using NSed.Search.Region;
 using ArgumentHelper.Arguments.General;
 using NSed.Arguments.NSed;
+using System.Diagnostics.Contracts;
 
 namespace NSed.Search
 {
@@ -17,9 +18,11 @@ namespace NSed.Search
         private int matchCount;
         private readonly string outFilePath;
         private ReplaceRegex replaceRegex;
+        private bool? isLastCharNewLine;
 
         public SearchAndReplace(NSedAllowedArgs args, String filePath)
         {
+            Contract.Requires(args != null);
             this.arguments = args;
             FilePath = filePath == null ? args.FilePath.StringValue : filePath;
             if (FilePath == null)
@@ -51,12 +54,14 @@ namespace NSed.Search
 
         private void ComplexFind()
         {
-            String[] lines = File.ReadAllLines(FilePath);
+            String allText = File.ReadAllText(FilePath);
+            isLastCharNewLine = allText.Length > 0 && allText[allText.Length - 1] == '\n';
+            String[] lines = GetLines(allText);
             SearchRegion region = SearchRegion.GetSearchRegion(lines,
                 GetInt(arguments.StartLineIndex), GetInt(arguments.EndLineIndex),
                 arguments.StartLineRegex.StringValue, arguments.EndLineRegex.StringValue,
                 GetInt(arguments.StartLineOffset), GetInt(arguments.EndLineOffset),
-                arguments.UseLastLine.FoundCount > 0, IsCaseSensitive);
+                arguments.UseLastLine.FoundCount > 0, IsCaseSensitive, isLastCharNewLine.Value);
             bool canReplace = CanReplace;
             FileStream writeStream = null;
             StreamWriter sw = null;
@@ -65,9 +70,9 @@ namespace NSed.Search
                 GetOutputStreams(out writeStream, out sw);
                 if (canReplace)
                 {
-                    foreach (String line in region.GetBeforeLines())
+                    foreach (LineData line in region.GetBeforeLines())
                     {
-                        WriteNotMatched(sw, line, true);
+                        WriteNotMatched(sw, line.Line, line.AppendNewLine);
                     }
                 }
 
@@ -89,7 +94,7 @@ namespace NSed.Search
                     }
                     else
                     {
-                        foreach (String line in region.GetSelectedLinesEnumerator())
+                        foreach (LineData line in region.GetSelectedLinesEnumerator())
                         {
                             HandleSingleLine(sw, line);
                         }
@@ -98,9 +103,9 @@ namespace NSed.Search
 
                 if (canReplace)
                 {
-                    foreach (String line in region.GetAfterLines())
+                    foreach (LineData line in region.GetAfterLines())
                     {
-                        WriteNotMatched(sw, line, true);
+                        WriteNotMatched(sw, line.Line, line.AppendNewLine);
                     }
                 }
             }
@@ -113,6 +118,20 @@ namespace NSed.Search
                 }
             }
             ReplaceOriginal();
+        }
+
+        private string[] GetLines(string input)
+        {
+            LinkedList<String> lines = new LinkedList<string>();
+            using (System.IO.StringReader reader = new System.IO.StringReader(input))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    lines.AddLast(line);
+                }
+            }
+            return lines.ToArray();
         }
 
         private int? GetInt(Argument arg)
@@ -137,12 +156,20 @@ namespace NSed.Search
             {
                 GetOutputStreams(out writeStream, out sw);
                 inputStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+                bool isLastCharNL = IsLastCharNewLine(inputStream);
+                inputStream.Seek(0, SeekOrigin.Begin);
                 sr = new StreamReader(inputStream, Encoding.GetEncoding(FileEncoding));
                 inputStream = null;
-                String line;
-                while ((line = sr.ReadLine()) != null)
+                String line1 = sr.ReadLine();
+                if (line1 != null)
                 {
-                    HandleSingleLine(sw, line);
+                    String line2;
+                    while ((line2 = sr.ReadLine()) != null)
+                    {
+                        HandleSingleLine(sw, new LineData(line1, false, true));
+                        line1 = line2;
+                    }
+                    HandleSingleLine(sw, new LineData(line1, true, isLastCharNL));
                 }
             }
             finally
@@ -164,16 +191,16 @@ namespace NSed.Search
             ReplaceOriginal();
         }
 
-        private void HandleSingleLine(StreamWriter writer, String line)
+        private void HandleSingleLine(StreamWriter writer, LineData line)
         {
-            Match m = findRegex.Match(line);
+            Match m = findRegex.Match(line.Line);
             if (m.Success)
             {
-                ReportMatchesAndWrite(writer, m, line, true);
+                ReportMatchesAndWrite(writer, m, line.Line, line.AppendNewLine);
             }
             else
             {
-                WriteNotMatched(writer, line, true);
+                WriteNotMatched(writer, line.Line, line.AppendNewLine);
             }
         }
 
@@ -325,5 +352,50 @@ namespace NSed.Search
         public bool DeleteFilePermanently { get; set; }
 
         public bool IsFileReplaced { get; private set; }
+
+        /// <summary>
+        /// Returns whether the last char of the stream is the new line character.
+        /// </summary>
+        /// <param name="fileStream">the open file stream</param>
+        /// <returns>whether the last char of the stream is the new line character</returns>
+        public bool IsLastCharNewLine(FileStream fileStream)
+        {
+            if (!isLastCharNewLine.HasValue)
+            {
+                bool lastNewLineValue;
+                if (CanReplace)
+                {
+                    if (fileStream.Length > 0)
+                    {
+                        fileStream.Seek(-1, SeekOrigin.End);
+                        int last = fileStream.ReadByte();
+                        lastNewLineValue = last == '\n';
+                    }
+                    else
+                    {
+                        lastNewLineValue = false;
+                    }
+                }
+                else
+                {
+                    lastNewLineValue = true;
+                }
+                isLastCharNewLine = lastNewLineValue;
+            }
+            return isLastCharNewLine.Value;
+        }
+
+        /// <summary>
+        /// Opens the input file and checks whether the last char of the file stream is the new line character.
+        /// </summary>
+        /// <returns>whether the last char of the file stream is the new line character</returns>
+        public bool CheckIsLastCharNewLine()
+        {
+            using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
+            {
+                return IsLastCharNewLine(fs);
+            }
+        }
+
     }
 }

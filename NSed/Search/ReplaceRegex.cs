@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -53,6 +54,9 @@ namespace NSed.Search
 
         public ReplaceRegex(String findRegex, string replaceRegex)
         {
+            Contract.Requires(findRegex != null);
+            Contract.Requires(replaceRegex != null);
+
             this.replaceRegex = replaceRegex;
             this.groupCount = GetGroupCount(findRegex);
             maxGroupNumberLen = groupCount.ToString().Length;
@@ -61,6 +65,7 @@ namespace NSed.Search
 
         public static int GetGroupCount(string findRegex)
         {
+            Contract.Requires(findRegex != null);
             int openCount = 0;
             int closeCount = 0;
             int len = findRegex.Length;

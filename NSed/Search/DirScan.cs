@@ -6,6 +6,7 @@ using NSed.Arguments.NSed;
 using System.IO;
 using ArgumentHelper.Arguments.General.Operators;
 using ArgumentHelper.Arguments.FileFilters;
+using System.Diagnostics.Contracts;
 
 namespace NSed.Search
 {
@@ -19,6 +20,7 @@ namespace NSed.Search
 
         public DirScan(NSedAllowedArgs args)
         {
+            Contract.Requires(args != null);
             this.args = args;
             if (args.Mindepth.FoundCount > 0)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,6 +17,7 @@ namespace NSed.Search.Region
         public EndRegexIndex(int? endLineOffset, string endLineRegexStr, bool useLastLine, bool caseSensitive)
             : base(endLineOffset)
         {
+            Contract.Requires(endLineRegexStr != null);
             this.endLineRegexStr = endLineRegexStr;
             this.useLastLine = useLastLine;
 

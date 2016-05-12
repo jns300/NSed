@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using NSed.Search.Region;
+using System.Diagnostics.Contracts;
 
 namespace NSed.Search.Region
 {
@@ -13,15 +14,23 @@ namespace NSed.Search.Region
         protected string[] lines;
         private IStartRegionIndex startRegionIndex;
         private IEndRegionIndex endRegionIndex;
+        private int lastLineIndex;
 
         private int? foundStartIndex;
         private int? foundEndIndex;
+        private bool isLastCharNewLine;
 
-        public SearchRegion(String[] lines, IStartRegionIndex startRegionIndex, IEndRegionIndex endRegionIndex)
+        public SearchRegion(String[] lines, IStartRegionIndex startRegionIndex, IEndRegionIndex endRegionIndex, bool isLastCharNewLine)
         {
+            Contract.Requires(lines != null);
+            Contract.Requires(startRegionIndex != null);
+            Contract.Requires(endRegionIndex != null);
+
             this.startRegionIndex = startRegionIndex;
             this.endRegionIndex = endRegionIndex;
             this.lines = lines;
+            this.isLastCharNewLine = isLastCharNewLine;
+            lastLineIndex = lines.Length - 1;
             FindIndexes();
         }
 
@@ -53,7 +62,7 @@ namespace NSed.Search.Region
             }
         }
 
-        public IEnumerable<string> GetBeforeLines()
+        public IEnumerable<LineData> GetBeforeLines()
         {
             int end = lines.Length;
             if (foundStartIndex.HasValue && foundEndIndex.HasValue)
@@ -63,11 +72,25 @@ namespace NSed.Search.Region
             end = Math.Min(lines.Length, end);
             for (int i = 0; i < end; i++)
             {
-                yield return lines[i];
+                yield return CreateLineData(i);
             }
         }
 
-        public IEnumerable<string> GetAfterLines()
+        private LineData CreateLineData(int i)
+        {
+            return new LineData(lines[i], i == lastLineIndex, GetAppendNewLine(i));
+        }
+
+        private bool GetAppendNewLine(int index)
+        {
+            if(index == lastLineIndex)
+            {
+                return isLastCharNewLine;
+            }
+            return true;
+        }
+
+        public IEnumerable<LineData> GetAfterLines()
         {
             int start = lines.Length;
             if (foundEndIndex.HasValue)
@@ -85,12 +108,12 @@ namespace NSed.Search.Region
             start = Math.Max(0, start);
             for (int i = start; i < end; i++)
             {
-                yield return lines[i];
+                yield return CreateLineData(i);
             }
         }
 
 
-        public IEnumerable<string> GetSelectedLinesEnumerator()
+        public IEnumerable<LineData> GetSelectedLinesEnumerator()
         {
             if (SelectedLineCount > 0)
             {
@@ -98,7 +121,7 @@ namespace NSed.Search.Region
                 int start = Math.Max(0, foundStartIndex.Value);
                 for (int i = start; i < end; i++)
                 {
-                    yield return lines[i];
+                    yield return CreateLineData(i);
                 }
             }
         }
@@ -110,19 +133,22 @@ namespace NSed.Search.Region
                 String separator = Environment.NewLine;
                 // Estimating capacity for the StringBuilder
                 int bufferLen = 0;
-                foreach (String line in GetSelectedLinesEnumerator())
+                foreach (LineData line in GetSelectedLinesEnumerator())
                 {
-                    bufferLen += line.Length + separator.Length;
+                    bufferLen += line.Line.Length + separator.Length;
                 }
                 
                 // Creating the buffer
                 StringBuilder sb = new StringBuilder(bufferLen);
 
                 // Filling the StringBuilder
-                foreach (String line in GetSelectedLinesEnumerator())
+                foreach (LineData line in GetSelectedLinesEnumerator())
                 {
-                    sb.Append(line);
-                    sb.Append(separator);
+                    sb.Append(line.Line);
+                    if (line.AppendNewLine)
+                    {
+                        sb.Append(separator);
+                    }
                 }
                 return sb.ToString();
             }
@@ -131,7 +157,7 @@ namespace NSed.Search.Region
 
         public static SearchRegion GetSearchRegion(String[] lines, int? startLineIndex, int? endLineIndex,
             string startLineRegexStr, string endLineRegexStr,
-            int? startLineOffset, int? endLineOffset, bool useLastLine, bool caseSensitive)
+            int? startLineOffset, int? endLineOffset, bool useLastLine, bool caseSensitive, bool isLastCharNewLine)
         {
             IStartRegionIndex startRegion;
             IEndRegionIndex endRegion;
@@ -152,7 +178,7 @@ namespace NSed.Search.Region
             {
                 endRegion = new EndIntIndex(endLineOffset, endLineIndex);
             }
-            SearchRegion region = new SearchRegion(lines, startRegion, endRegion);
+            SearchRegion region = new SearchRegion(lines, startRegion, endRegion, isLastCharNewLine);
             return region;
         }
 

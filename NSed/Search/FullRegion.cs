@@ -25,8 +25,8 @@ namespace NSed.Search.Region
                 return lines.Length - 1;
             }
         }
-        public FullRegion(String[] lines)
-            :base(lines, new ConstStartIndex(), new ConstEndIndex())
+        public FullRegion(String[] lines, bool isLastCharNewLine)
+            :base(lines, new ConstStartIndex(), new ConstEndIndex(), isLastCharNewLine)
         {
         }
     }

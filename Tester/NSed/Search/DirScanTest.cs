@@ -66,7 +66,7 @@ namespace Tester.NSed.Search
         {
             File.WriteAllText(tempFilePath, "winodws\\abc\\10");
             FilterContext.SetDataProvider(new TestContextDataProvider(DateTime.Now.AddMinutes(-10.0)));
-            TestScan(new String[] { "-scan", @".\scanTest", "-name", "tempFile.txt", ";", "-find", "windows\\abc\\" , "-replace", "windows\\efg\\" },
+            TestScan(new String[] { "-scan", @".\scanTest", "-name", "tempFile.txt", ";", "-find", "windows\\abc\\", "-replace", "windows\\efg\\" },
                 new String[] { "./tempFile.txt" });
         }
 
@@ -93,14 +93,26 @@ namespace Tester.NSed.Search
         [Test]
         public void ScanSingle()
         {
+            ScanSingleWithParameters(true);
+        }
+
+        [Test]
+        public void ScanSingleNoNewLine()
+        {
+            ScanSingleWithParameters(false);
+        }
+
+        private void ScanSingleWithParameters(bool appendNewLine)
+        {
             String filePath = "singleScanFile.txt";
             try
             {
-                File.WriteAllText(filePath, "a b c ");
+                String nl = appendNewLine ? Environment.NewLine : String.Empty;
+                File.WriteAllText(filePath, "a b c " + nl);
                 TestScan(new String[] { "-del", "-f", filePath, "-find", "c\\s+$*", "-replace", "" },
                     new String[] { });
                 String actual = File.ReadAllText(filePath);
-                Assert.AreEqual("a b " + Environment.NewLine, actual);
+                Assert.AreEqual("a b " + nl, actual);
             }
             finally
             {

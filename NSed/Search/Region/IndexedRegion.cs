@@ -9,9 +9,9 @@ namespace NSed.Search.Region
     {
 
         public IndexedRegion(String[] lines, int? startLineOffset, int? endLineOffset,
-            int? startLineIndex, int? endLineIndex)
+            int? startLineIndex, int? endLineIndex, bool isLastCharNewLine)
             : base(lines, new StartIntIndex(startLineOffset, startLineIndex),
-            new EndIntIndex(endLineOffset, endLineIndex))
+            new EndIntIndex(endLineOffset, endLineIndex), isLastCharNewLine)
         {
         }
     }
