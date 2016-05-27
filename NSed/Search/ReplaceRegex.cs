@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NSed.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -54,8 +55,8 @@ namespace NSed.Search
 
         public ReplaceRegex(String findRegex, string replaceRegex)
         {
-            Contract.Requires(findRegex != null);
-            Contract.Requires(replaceRegex != null);
+            CustomContract.Requires(findRegex != null);
+            CustomContract.Requires(replaceRegex != null);
 
             this.replaceRegex = replaceRegex;
             this.groupCount = GetGroupCount(findRegex);
@@ -65,7 +66,7 @@ namespace NSed.Search
 
         public static int GetGroupCount(string findRegex)
         {
-            Contract.Requires(findRegex != null);
+            CustomContract.Requires(findRegex != null);
             int openCount = 0;
             int closeCount = 0;
             int len = findRegex.Length;

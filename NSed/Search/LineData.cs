@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NSed.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace NSed.Search
     {
         public LineData(String line, bool isLast, bool appendNewLine)
         {
-            Contract.Requires(line != null);
+            CustomContract.Requires(line != null);
             Line = line;
             IsLast = isLast;
             AppendNewLine = appendNewLine;

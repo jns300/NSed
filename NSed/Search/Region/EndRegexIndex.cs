@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NSed.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -14,10 +15,16 @@ namespace NSed.Search.Region
 
         private Regex endLineRegex;
 
+        /// <summary>
+        /// Creates a new end region index.
+        /// </summary>
+        /// <param name="endLineOffset">the end line offset</param>
+        /// <param name="endLineRegexStr">the end line regular expression (can be null)</param>
+        /// <param name="useLastLine">whether to use the last line when the index is not found</param>
+        /// <param name="caseSensitive">whether to create case sensitive Regex</param>
         public EndRegexIndex(int? endLineOffset, string endLineRegexStr, bool useLastLine, bool caseSensitive)
             : base(endLineOffset)
         {
-            Contract.Requires(endLineRegexStr != null);
             this.endLineRegexStr = endLineRegexStr;
             this.useLastLine = useLastLine;
 

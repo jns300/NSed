@@ -9,14 +9,19 @@ namespace NSed.Search.Region
     public class StartRegexIndex : AbstractStartIndex
     {
         private string startLineRegexStr;
-        private bool useLastLine;
 
         private Regex startLineRegex;
-        public StartRegexIndex(int? startLineOffset, string startLineRegexStr, bool useLastLine, bool caseSensitive)
+
+        /// <summary>
+        /// Creates a new start region index.
+        /// </summary>
+        /// <param name="endLineOffset">the start line offset</param>
+        /// <param name="endLineRegexStr">the start line regular expression (can be null)</param>
+        /// <param name="caseSensitive">whether to create case sensitive Regex</param>
+        public StartRegexIndex(int? startLineOffset, string startLineRegexStr, bool caseSensitive)
             : base(startLineOffset)
         {
             this.startLineRegexStr = startLineRegexStr;
-            this.useLastLine = useLastLine;
 
             RegexOptions options = !caseSensitive ? RegexOptions.IgnoreCase : 0;
             if (startLineRegexStr != null)

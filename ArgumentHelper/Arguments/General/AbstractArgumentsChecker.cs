@@ -176,6 +176,18 @@ namespace ArgumentHelper.Arguments.General
             }
         }
 
+        public void EnsureArgumentSet(String messageText, params Argument[] arguments)
+        {
+            var q = arguments.SelectMany(a => a.Names);
+            foreach (var entry in countMap)
+            {
+                if (entry.Value > 0 && q.Where(name => name == entry.Key).FirstOrDefault() == null)
+                {
+                    throw new ArgumentValidationException(String.Format("{0}: {1}", messageText, entry.Key));
+                }
+            }
+        }
+
         /// <summary>
         /// Process the arguments.
         /// </summary>

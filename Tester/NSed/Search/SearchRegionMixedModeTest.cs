@@ -34,12 +34,12 @@ namespace Tester.NSed.Search
             AssertRegionState(region, new string[] { }, new string[] { "4" }, new string[] { "1", "2", "3" });
 
             region = new SearchRegion(lines,
-                new StartRegexIndex(null, "2", false, false),
+                new StartRegexIndex(null, "2", false),
                 new EndIntIndex(null, -2), false);
             AssertRegionState(region, new string[] { "1" }, new string[] { "4" }, new string[] { "2", "3" });
 
             region = new SearchRegion(lines,
-                new StartRegexIndex(-1, "2", false, false),
+                new StartRegexIndex(-1, "2", false),
                 new EndIntIndex(1, -3), false);
             AssertRegionState(region, new string[] { }, new string[] { "4" }, new string[] { "1", "2", "3" });
         }

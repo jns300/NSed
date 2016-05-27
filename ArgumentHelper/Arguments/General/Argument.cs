@@ -22,7 +22,14 @@ namespace ArgumentHelper.Arguments.General
 
         }
 
-        public IReadOnlyCollection<String> Names { get; private set; }
+        public String Name
+        {
+            get
+            {
+                return Names[0];
+            }
+        }
+        public IReadOnlyList<String> Names { get; private set; }
         public string Description { get; private set; }
         public bool HasValue { get; private set; }
         public int Count { get; private set; }
@@ -137,7 +144,7 @@ namespace ArgumentHelper.Arguments.General
 
         public override string ToString()
         {
-            return GetUsageName(NameString) + UsageDescription;
+            return GetUsageName(NameString) + ", " + UsageDescription;
         }
 
         public void SetFoundValues(string value, int foundCount)

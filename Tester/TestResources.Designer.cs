@@ -66,7 +66,7 @@ namespace Tester {
         ///Bundle-Name: %Bundle-Name.0
         ///Bundle-Vendor: %Bundle-Vendor.0
         ///Bundle-SymbolicName: com.eclipse.test.location.editor;singleton:=true
-        ///Bundle-Version: 1.0.3.qualifier
+        ///Bundle-Version: 1.0.3
         ///Bundle-Activator: com.eclipse.test.location.editor.Activator
         ///Require-Bundle: org.eclipse.ui,
         /// org.eclipse.ui.views,
@@ -76,7 +76,7 @@ namespace Tester {
         /// org.eclipse.draw2d,
         /// org.eclipse.gef,
         /// org.eclipse.core.runtime,
-        /// org.eclipse.core. [rest of string was truncated]&quot;;.
+        /// org.eclipse.core.resources, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ManifestForTests {
             get {

@@ -8,6 +8,7 @@ using NSed.Search.Region;
 using ArgumentHelper.Arguments.General;
 using NSed.Arguments.NSed;
 using System.Diagnostics.Contracts;
+using NSed.Util;
 
 namespace NSed.Search
 {
@@ -22,7 +23,7 @@ namespace NSed.Search
 
         public SearchAndReplace(NSedAllowedArgs args, String filePath)
         {
-            Contract.Requires(args != null);
+            CustomContract.Requires(args != null);
             this.arguments = args;
             FilePath = filePath == null ? args.FilePath.StringValue : filePath;
             if (FilePath == null)

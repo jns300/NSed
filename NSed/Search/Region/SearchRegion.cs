@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NSed.Search.Region;
 using System.Diagnostics.Contracts;
+using NSed.Util;
 
 namespace NSed.Search.Region
 {
@@ -22,9 +23,9 @@ namespace NSed.Search.Region
 
         public SearchRegion(String[] lines, IStartRegionIndex startRegionIndex, IEndRegionIndex endRegionIndex, bool isLastCharNewLine)
         {
-            Contract.Requires(lines != null);
-            Contract.Requires(startRegionIndex != null);
-            Contract.Requires(endRegionIndex != null);
+            CustomContract.Requires(lines != null);
+            CustomContract.Requires(startRegionIndex != null);
+            CustomContract.Requires(endRegionIndex != null);
 
             this.startRegionIndex = startRegionIndex;
             this.endRegionIndex = endRegionIndex;
@@ -163,7 +164,7 @@ namespace NSed.Search.Region
             IEndRegionIndex endRegion;
             if (startLineRegexStr != null)
             {
-                startRegion = new StartRegexIndex(startLineOffset, startLineRegexStr, useLastLine, caseSensitive);
+                startRegion = new StartRegexIndex(startLineOffset, startLineRegexStr, caseSensitive);
             }
             else
             {
